@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:bolck th:include="common/header :: header('用户停用')" />
+    <link rel="stylesheet" th:href="@{/css/formSelects-v4.css}" />
+    <style>
+        .layui-table tbody tr:hover {background-color: #ffffff;}
+    </style>
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>停用说明：停用前，请先移交项目，将该用户负责的项目组交给同部门同角色的用户；停用后，此用户不能登陆系统
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">用户信息</label>
+                <div class="layui-input-block">
+                    <table class="layui-table">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:right;">姓名</td>
+                                <td style="text-align:center;" th:text="${userVo.realName}"></td>
+                                <td style="text-align:right;">员工编号</td>
+                                <td style="text-align:center;" th:text="${userVo.employeeNo}"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right;">角色</td>
+                                <td style="text-align:center;" th:text="${userVo.role.roleCnName}"></td>
+                                <td style="text-align:right;">部门</td>
+                                <td style="text-align:center;" th:text="${userVo.deptName}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label   for="stopType" class="layui-form-label">停用信息</label>
+                <div class="layui-input-block">
+                    <table class="layui-table">
+                        <tbody>
+                        <tr>
+                            <td width="25%" style="text-align:right;"><span class="x-red">*</span>停用类型</td>
+                            <td colspan="3">
+                                <!--<input name="role.id" type="radio" th:each="r:${roles}" th:value="${r.id}"  th:checked="${r.id==userVo.role.id}"     th:title="${r.roleCnName}"  />-->
+                                <input id="stopType" name="stopType" type="radio" lay-verify="stopType" th:each="stopType : ${stopTypeList}" th:value="${stopType.dicCode}" th:title="${stopType.dicContent}">
+                               <!-- <input name="type" type="radio"    value="1" title="离职" />
+                                <input name="type" type="radio"    value="2" title="转岗" />
+                                <input name="type" type="radio"    value="3" title="其他原因" />-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="25%" style="text-align:right;">备注</td>
+                            <td colspan="3">
+                                <input type="text" id="remark" name="remark" required="" lay-verify="remark" autocomplete="off"  placeholder="请输入备注" class="layui-input" maxlength="100">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+<!--            <div class="layui-form-item layui-form-text" th:if="${userVo.role.roleCode} eq 'DM'">-->
+<!--                <label  class="layui-form-label">项目组移交</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <table class="layui-table">-->
+<!--                        <tbody>-->
+<!--                        <tr>-->
+<!--                            <td width="25%" style="text-align:right;">项目组</td>-->
+<!--                            <td colspan="3">-->
+<!--                               &lt;!&ndash; <select name="projectGroupSelect" xm-select="projectGroupSelect" lay-filter="projectGroupSelect" lay-verify="projectGroupSelect">-->
+<!--                                </select>&ndash;&gt;-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td width="25%" style="text-align:right;">同角色用户</td>-->
+<!--                            <td colspan="3">-->
+<!--                               &lt;!&ndash; <select name="userSelect" xm-select="userSelect" lay-filter="userSelect"  xm-select-max="1" lay-verify="userSelect">-->
+<!--                                </select>&ndash;&gt;-->
+<!--                                <select name="ownUserId">-->
+<!--                                    <option value="">请选择转移的用户</option>-->
+<!--                                    <option th:each="user : ${userSelect}" th:value="${user.value}" th:text="${user.name}"></option>-->
+<!--                                </select>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="layui-form-item layui-form-text" th:if="${userVo.role.roleCode} eq 'AM'">-->
+<!--                <label  class="layui-form-label">客户移交</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <table class="layui-table">-->
+<!--                        <tbody>-->
+<!--                        <tr>-->
+<!--                            <td width="25%" style="text-align:right;">客户</td>-->
+<!--                            <td colspan="3">-->
+<!--                                &lt;!&ndash; <select name="projectGroupSelect" xm-select="projectGroupSelect" lay-filter="projectGroupSelect" lay-verify="projectGroupSelect">-->
+<!--                                 </select>&ndash;&gt;-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td width="25%" style="text-align:right;">同角色用户</td>-->
+<!--                            <td colspan="3">-->
+<!--                                &lt;!&ndash;<select name="userSelect" xm-select="userSelect" lay-filter="userSelect"  xm-select-max="1" lay-verify="userSelect">-->
+<!--                                </select>&ndash;&gt;-->
+<!--                                <select name="ownUserId" >-->
+<!--                                    <option value="">请选择转移的用户</option>-->
+<!--                                    <option th:each="user : ${userSelect}" th:value="${user.value}" th:text="${user.name}"></option>-->
+<!--                                </select>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="layui-form-item">
+                <label for="stop" class="layui-form-label"></label>
+                <input type="hidden" name="userId" th:value="${userVo.id}" />
+                <input type="hidden" name="roleId" th:value="${userVo.role.id}" />
+                <input type="hidden" name="deptId" th:value="${userVo.deptId}" />
+                <input type="hidden" name="roleCode" th:value="${userVo.role.roleCode}" />
+                <button class="layui-btn" id="stop" lay-filter="stop" lay-submit="">停用</button>
+                <!--<button class="layui-btn" id="close" lay-filter="close" lay-submit="">关闭</button>-->
+            </div>
+        </form>
+    </div>
+</div>
+<script th:src="@{/js/common/common.js}" type="text/javascript" charset="utf-8"></script>
+<script th:src="@{/js/formSelects-v4.js}" type="text/javascript" charset="utf-8"></script>
+<script th:src="@{/js/user/user.js}" type="text/javascript" charset="utf-8"></script>
+<script>
+    var userId = $("input[name='userId']").val();
+    var roleId = $("input[name='roleId']").val();
+    var deptId = $("input[name='deptId']").val();
+    var roleCode = $("input[name='roleCode']").val();
+    var stopType = $("input[name='stopType']").val();
+    //if (roleCode == 'DM') {
+        // 下拉多选框
+       /* formSelects.data('projectGroupSelect', 'server', {
+            url: '/pg-/pgselect/' + userId
+        });*/
+      /*  formSelects.data('userSelect', 'server', {
+            url: '/sys-user/userselect/' + roleId + '/' + userId  + '/' + deptId
+        });*/
+    //}
+    layui.use(['form', 'layer'],
+    function() {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            stopType: function(value) {
+                if (value.length < 5) {
+                    return '请选择停用类型';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(stop)', function(data) {
+            $.ajax({
+                type:'put',
+                url:'/sys-user/stop/',
+                data:data.field,
+                success:function (r) {
+                    if("edit_200"==r.code){
+                        layer.msg('停用成功', {icon: 6});
+                        timeoutClose(1000,'dataTable');
+                        // var index = parent.layer.getFrameIndex(window.name);
+                        // parent.layer.close(index);
+                        // parent.layui.table.reload('dataTable');//重载父页表格，参数为表格ID
+                    } else {
+                        layer.msg('停用失败', {icon: 5});
+                    }
+                }
+            });
+                return false;
+            });
+    });
+</script>
+
+</body>
+
+</html>

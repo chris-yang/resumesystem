@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <th:bolck th:include="common/header :: header('添加用户')" />
+        <link rel="stylesheet" th:href="@{/css/formSelects-v4.css}" />
+        <link rel="stylesheet" th:href="@{/lib/layui_ext/dtree/dtree.css}">
+        <link rel="stylesheet" th:href="@{/lib/layui_ext/dtree/font/dtreefont.css}">
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <input type="hidden" id="parentId" name="parentId" th:value="${baCustomer.pid}" />
+                    <input type="hidden" name="id" th:value="${baCustomer.id}" th:if="${baCustomer!=null}" />
+                    <div class="layui-form-item">
+
+                        <div class="layui-form-item">
+                            <label for="parentName" class="layui-form-label">
+                                <span class="x-red">*</span>父客户名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="parentName" name="parentName" readonly="true" th:value="${mode.equals('update')}?${baCustomer.parentName}:${baCustomer.parentName}" required="" lay-verify="customerName" autocomplete="off"  placeholder="请输入客户名称" class="layui-input" maxlength="20">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="customerName" class="layui-form-label">
+                                <span class="x-red">*</span>客户名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="customerName" name="customerName"  th:value="${mode.equals('update')}?${baCustomer.customerName}:${baCustomer.customerName}" required="" lay-verify="customerName" autocomplete="off"  placeholder="请输入客户名称" class="layui-input" maxlength="20">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="customerCode" class="layui-form-label">
+                                <span class="x-red">*</span>客户编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="customerCode" name="customerCode" th:value="${mode.equals('update')}?${baCustomer.customerCode}:${baCustomer.customerCode}"  required="" lay-verify="code" autocomplete="off" placeholder="请输入客户编号" class="layui-input" maxlength="20">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="deptId" class="layui-form-label">
+                                <span class="x-red">*</span>部门名称</label>
+                            <div class="layui-input-inline">
+                                <select id="deptId" name="deptId" lay-filter="deptId" xm-select-max="1" lay-verify="deptId" xm-select-radio xm-select="deptSelect" placeholder="请选择部门" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label for="chief" class="layui-form-label">
+                                <span class="x-red">*</span>客户负责人</label>
+                            <div class="layui-input-inline">
+                                <select id="chief" name="chief" lay-filter="chief" lay-verify="chief" th:field="*{baCustomer.chief}">
+                                    <option value="">请选择部门负责人</option>
+                                    <option th:if="${!mode.equals('add')}"  th:each="user:${chiefs}" th:value="${user.id}" th:text="${user.realName}" />
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label for="sort" class="layui-form-label">
+                                <span class="x-red">*</span>显示顺序</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="sort" name="sort" th:value="${!mode.equals('add')}?${baCustomer.sort}" required="" lay-verify="sort" autocomplete="off" class="layui-input"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="add" class="layui-form-label"></label>
+                            <button class="layui-btn" id="add" lay-filter="add" th:text="${mode.equals('add')}?'增加' : '修改'" th:if="${!mode.equals('view')}" lay-submit="">增加</button>
+                        </div>
+                   </div>
+                </form>
+            </div>
+        </div>
+        <script th:src="@{/js/formSelects-v4.js}" type="text/javascript" charset="utf-8"></script>
+        <script th:src="@{/js/customer/customer.js}" type="text/javascript" charset="utf-8"></script>
+        <script th:src="@{/js/common/common.js}" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" th:inline="javascript">
+            var mode=[[${mode}]];
+            // 下拉多选框
+
+            if('update'==[[${mode}]]) {
+                var pIdInit = [[${baCustomer.deptId}]];
+                formSelects.data('deptSelect', 'server', {
+                    url: '/sys-dept/deptselect',
+                    success: function(id, url, searchVal, result) {
+                        formSelects.value('deptSelect', [pIdInit]);
+                    }
+                });
+            } else{
+                formSelects.data('deptSelect', 'server', {
+                    url: '/sys-dept/deptselect'});
+            }
+
+            // 表单操作
+            layui.use(['form', 'layer','jquery'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                    layer = layui.layer;
+                form.render();
+                //自定义验证规则
+                form.verify({
+                    deptId: function(value) {
+                        if (value.trim().length < 1) {
+                            return '请选择客户所属部门';
+                        }
+                    },
+                    customerName: function(value) {
+                        if (value.trim().length < 1) {
+                            return '客户名称至少得1个字符';
+                        }
+                    },
+                    customerCode: function (value) {
+                        if (value.trim().length < 1) {
+                            return '客户编号至少得1个字符';
+                        }
+                    },
+                    chief: function (value) {
+                        if (value.trim().length < 1) {
+                            return '客户负责人至少得1个字符';
+                        }
+                    }
+                });
+                //根据选择的客户加载项目
+                // form.on('select(deptId)',function(data){
+                // //$('#deptId').change(function(){
+                //     alert('deptId');
+                //     var deptId = data.value;data.value;
+                //     $.ajax({
+                //         type:'get',
+                //         url:'/sys-user/dept/role/users/'+deptId,
+                //         success:function(r){
+                //             if(r.code=='0') {
+                //                 var users = r.data;
+                //                 var chief=$("#chief").empty();
+                //                 for(var i=0;i<users.length;i++) {
+                //                     chief.append("<option value='"+users[i].userId+"'>"+users[i].userRealName+"</option>");
+                //                 }
+                //                 form.render();
+                //             } else {
+                //                 layer.msg('负责人据加载失败',{icon:5});
+                //             }
+                //         }
+                //         ,error:function(r) {
+                //             layer.msg('负责人数据加载失败',{icon:5});
+                //         }
+                //     })
+                // });
+                //监听提交
+                form.on('submit(add)', function(data){
+
+                    if("add"==mode ) {
+                        $.post('/ba-customer/add',data.field,function (r) {
+                            layer.alert(r.msg, {
+                                    icon : r.code == 'add_200' ? 6: 5
+                                },
+                                function() {
+                                  // reloadTable('dataTable');
+                                });
+                        });
+                    } else if('update'==mode){
+                        $.ajax({
+                            url:"/ba-customer/update/",
+                            type:"PUT",
+                            data: data.field,
+                            success:function(r){
+                                layer.alert(r.msg, {
+                                        icon : r.code == 'edit_200' ? 6: 5
+                                    },
+                                    function() {
+                                        // reloadTable('dataTable');
+                                    });
+                            }
+                        });
+                    }
+                    return false;
+                });
+
+            });
+        </script>
+    </body>
+</html>

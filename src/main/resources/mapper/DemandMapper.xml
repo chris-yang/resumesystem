@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beyondsoft.mapper.DemandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.beyondsoft.entity.Demand">
+        <id column="id" property="id" />
+        <result column="demand_name" property="demandName" />
+        <result column="job_category" property="jobCategory" />
+        <result column="job_id" property="jobId" />
+        <result column="job_style" property="jobStyle" />
+        <result column="job_level" property="jobLevel" />
+        <result column="area" property="area" />
+        <result column="post_info" property="postInfo" />
+        <result column="job_info" property="jobInfo" />
+        <result column="degree" property="degree" />
+        <result column="work_years" property="workYears" />
+        <result column="gender" property="gender" />
+        <result column="internal_recommend" property="internalRecommend" />
+        <result column="internal_recommend_status" property="internalRecommendStatus" />
+        <result column="customer_id" property="customerId" />
+        <result column="start_time" property="startTime" />
+        <result column="close_time" property="closeTime" />
+        <result column="demand_status" property="demandStatus" />
+        <result column="person_count" property="personCount" />
+        <result column="salary_area" property="salaryArea" />
+        <result column="demand_type" property="demandType" />
+        <result column="user_id" property="userId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="job_orders" property="jobOrders" />
+        <result column="del_flag" property="delFlag" />
+    </resultMap>
+    <select id="demandList" parameterType="com.beyondsoft.co.DemandCo" resultType="com.beyondsoft.vo.DemandVo">
+
+        SELECT
+            dd.*
+            ,c.city_name as areaContent
+            ,dic.dic_content as jobStyleContent
+            ,dic1.dic_content as salaryAreaContent
+            ,dic2.dic_content as jobLevelContent
+            ,dic3.dic_content as degreeContent
+            ,dic4.dic_content as genderContent
+            ,dic5.dic_content as workYearsContent
+           ,u.real_name as realName
+        from demand dd
+        left join ba_city c on dd.area=c.id
+        left join sys_data_dic dic on dd.job_style=dic.dic_code
+        left join sys_data_dic dic1 on dd.salary_area=dic1.dic_code
+        left join sys_data_dic dic2 on dd.job_level=dic2.dic_code
+        left join sys_data_dic dic3 on dd.degree=dic3.dic_code
+        left join sys_data_dic dic4 on dd.gender=dic4.dic_code
+        left join sys_data_dic dic5 on dd.work_years=dic5.dic_code
+        left join sys_user u on u.id=dd.user_id
+        where dd.del_flag=#{demandCo.delFlag}
+    </select>
+
+
+</mapper>

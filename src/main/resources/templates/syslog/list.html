@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html class="x-admin-sm"  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <th:bolck th:include="common/header :: header('用户管理')" />
+    </head>
+    <body>
+        <div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="/home">首页</a>
+            <a href="">系统管理</a>
+            <a>
+              <cite>日志管理</cite></a>
+          </span>
+          <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body">
+                            <form class="layui-form layui-col-space5" onsubmit="return false">
+                                <div class="layui-inline layui-show-xs-block">
+                                    <input type="text" id="keyword" name="keyword"  placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-inline layui-show-xs-block">
+                                    <button class="layui-btn" id="search" data-type="reload" lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i>查询</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-body layui-table-body layui-table-main" >
+                            <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+    <script type="text/javascript"  th:inline="none">
+      layui.use(['laydate','table','form','element'], function(){
+        var laydate = layui.laydate;
+        var  form = layui.form;
+        var table = layui.table;
+        table.render({
+           elem: '#dataTable',
+           url: '/sys-log/pagedata',
+           // toolbar: '',
+           page: true,
+           title: '系统日志数据表',
+           height: 'full-210',
+           // id: 'userData',
+           cols: [
+               [
+               {field:'id',type:'checkbox',fixed:'left'},
+               {field:'userName',title:'操作人',align:'center',fixed:'left'},
+               {field:'logTypeContent',title:'操作类型',align:'center'},
+               {field:'module',title:'操作模块',align:'center'},
+               {field:'method',title:'操作功能',align:'center'},
+               {field:'ip',title:'访问IP',align:'center'},
+               {field:'comment',title:'访问结果',align:'center'},
+               {field:'url',title:'请求地址',align:'center'},
+               {field:'createTime',title:'请求日期',align:'center'}
+           ]]
+        });
+          var $ = layui.$, active = {
+              reload: function(){
+                  var keyword = $('#keyword');
+                  //执行重载
+                  table.reload('dataTable', {
+                      page: {
+                          curr: 1 //重新从第 1 页开始
+                      }
+                      ,where: {
+                              keyword: keyword.val()
+                      }
+                  }, 'data');
+              }
+          };
+          $('.layui-btn').on('click', function(){
+              var type = $(this).data('type');
+              active[type] ? active[type].call(this) : '';
+          });
+
+
+      });
+
+    </script>
+</html>

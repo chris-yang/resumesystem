@@ -1,0 +1,110 @@
+<!doctype html>
+<html  class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:bolck th:include="common/header :: header('登陆')" />
+    <script>
+        $(function () {
+            //判断一下当前是不是最顶层，如果不是，则做一下顶层页面重定向
+            if (window != top) {
+                top.location.href = location.href;
+            }
+        });
+    </script>
+</head>
+<body class="login-bg">
+<div class="login_back">
+    <div class="login_left "> <img th:src="@{/images/center1.png}"></div>
+    <div class="login  layui-anim layui-anim-up">
+        <div class="message">企业服务事业群结算系统-后台登录</div>
+        <div id="darkbannerwrap"></div>
+
+        <form method="post" class="layui-form" >
+            <input name="username" id="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+            <hr class="hr15">
+            <input name="password" id="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15" id="login_hr">
+            <input value="登录验证" id="login" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20" >
+            <div id="divrole">
+                <select id="role" name="role" lay-filter="role" lay-verify="role" ></select>
+            </div>
+
+            <hr class="hr15">
+            <input value="登录" id="loginverify" lay-submit lay-filter="loginverify" style="width:100%;" type="button" >
+        </form>
+
+    </div>
+</div>
+<div>
+    <div th:replace="common/footer :: html"></div>
+</div>
+<script>
+    $(function  () {
+        layui.use('form', function(){
+            var form = layui.form;
+
+            $("#divrole").hide();
+            $("#loginverify").hide();
+
+            //监听提交 登录验证通过显示当前用户的角色
+            form.on('submit(login)', function(data){
+                var url = '/doLogin';
+                $.post(url,data.field, function(r) {
+                    if (r.code == 200) {
+                        //显示角色
+                        $("#role").empty();
+                        for (var i = 0; i < r.data.length; i++) {
+                            var role = r.data[i];
+                            $("#role").append("<option value='"+role.roleId+"'>"+role.roleCnName+"</option>");
+                        }
+                        //显示角色下拉列表
+                        $("#divrole").show();
+                        $("#loginverify").show();
+                        //登录按钮隐藏
+                        $("#login").hide();
+                        $("#login_hr").hide();
+                        render();
+                        //window.location.href = '/home';
+                    } else {
+                        layer.msg(r.msg);
+                    }
+                });
+                return false;
+            });
+            //跳转登录
+            $('#loginverify').click(function () {
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var roleId = $('#role').children('option:selected').val();
+                $.ajax({
+                    type:'post',
+                    url:'/verify/login',
+                    data:{username:username,password:password,roleId:roleId},
+                    success:function(r){
+                        if (r.code == 200) {
+                            window.location.href = '/home';
+                        }else {
+                            layer.msg(r.msg);
+                        }
+                    }
+                    ,error:function(r) {
+                        layer.msg('登录失败',{icon:5});
+                    }
+                });
+            });
+        });
+    });
+
+
+    // 页面渲染
+    function render(){
+        layui.use('form', function(){
+            var form = layui.form;
+            form.render();
+        });
+    }
+</script>
+<!-- 底部结束 -->
+
+</body>
+</html>

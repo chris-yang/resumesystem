@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <th:bolck th:include="common/header :: header('添加职位')" />
+        <link rel="stylesheet" th:href="@{/css/formSelects-v4.css}" />
+        <link rel="stylesheet" th:href="@{/lib/layui_ext/dtree/dtree.css}">
+        <link rel="stylesheet" th:href="@{/lib/layui_ext/dtree/font/dtreefont.css}">
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <input type="hidden" name="id" th:value="${demand.id}" th:if="${demand!=null}" />
+                    <div class="layui-form-item">
+
+                        <div class="layui-form-item">
+                            <label for="demandName" class="layui-form-label">
+                                <span class="x-red">*</span>职位名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="demandName" name="demandName"  th:value="${mode.equals('update')}?${demand.demandName}" required="" lay-verify="demandName" autocomplete="off"  placeholder="请输入职位名称" class="layui-input" maxlength="20">
+                            </div>
+
+                            <label for="jobStyle" class="layui-form-label">
+                                <span class="x-red">*</span>职位性质</label>
+                            <div class="layui-input-inline">
+                                <select id="jobStyle" name="jobStyle" lay-filter="jobStyle" lay-verify="jobStyle" th:field="*{demand.jobStyle}">
+                                    <option value="">请选择职位性质</option>
+                                    <option th:each="jobStyle:${jobStyles}" th:value="${jobStyle.dicCode}" th:text="${jobStyle.dicContent}" >
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="area" class="layui-form-label">
+                                <span class="x-red">*</span>工作城市</label>
+                            <div class="layui-input-inline">
+                                <select id="area" name="area" lay-filter="area" lay-verify="area" th:field="*{demand.area}">
+                                    <option value="">请选择工作城市</option>
+                                    <option th:each="city:${cites}" th:value="${city.id}" th:text="${city.cityName}" >
+                                </select>
+                            </div>
+
+                            <label for="personCount" class="layui-form-label">
+                                <span class="x-red">*</span>招聘人数</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="personCount" name="personCount"  th:value="${mode.equals('update')}?${demand.personCount}" required="" lay-verify="personCount" autocomplete="off"  placeholder="请输入招聘人数" class="layui-input" maxlength="20">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="salaryArea" class="layui-form-label">
+                                <span class="x-red">*</span>薪酬范围</label>
+                            <div class="layui-input-inline">
+                                <select id="salaryArea" name="salaryArea" lay-filter="salaryArea" lay-verify="salaryArea" th:field="*{demand.salaryArea}">
+                                    <option value="">请选择薪酬范围</option>
+                                    <option th:each="salary:${salaryAreas}" th:value="${salary.dicCode}" th:text="${salary.dicContent}" >
+                                </select>
+                            </div>
+
+                            <label for="jobLevel" class="layui-form-label">
+                                <span class="x-red">*</span>职位级别</label>
+                            <div class="layui-input-inline">
+                                <select id="jobLevel" name="jobLevel" lay-filter="jobLevel" lay-verify="jobLevel" th:field="*{demand.jobLevel}">
+                                    <option value="">请选择职位级别</option>
+                                    <option th:each="jobLevel:${jobLevels}" th:value="${jobLevel.dicCode}" th:text="${jobLevel.dicContent}" >
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="degree" class="layui-form-label">
+                                <span class="x-red">*</span>学历</label>
+                            <div class="layui-input-inline">
+                                <select id="degree" name="degree" lay-filter="degree" lay-verify="degree" th:field="*{demand.degree}">
+                                    <option value="">请选择学历</option>
+                                    <option th:each="degree:${degrees}" th:value="${degree.dicCode}" th:text="${degree.dicContent}" >
+                                </select>
+                            </div>
+
+                            <label for="workYears" class="layui-form-label">
+                                <span class="x-red">*</span>工作经验</label>
+                            <div class="layui-input-inline">
+                                <select id="workYears" name="workYears" lay-filter="workYears" lay-verify="workYears" th:field="*{demand.workYears}">
+                                    <option value="">请选择工作经验</option>
+                                    <option th:each="work:${workYears}" th:value="${work.dicCode}" th:text="${work.dicContent}" >
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="gender" class="layui-form-label">
+                                <span class="x-red">*</span>性别要求</label>
+                            <div class="layui-input-inline">
+                                <select id="gender" name="gender" lay-filter="gender" lay-verify="gender" th:field="*{demand.gender}">
+                                    <option value="">请选择性别</option>
+                                    <option th:each="gender:${genders}" th:value="${gender.dicCode}" th:text="${gender.dicContent}" >
+                                </select>
+                            </div>
+                            <label for="internalRecommend" class="layui-form-label">
+                                <span class="x-red">*</span>内推职位</label>
+                            <div class="layui-input-inline">
+                                <select id="internalRecommend" name="internalRecommend" lay-filter="internalRecommend" lay-verify="internalRecommend" th:field="*{demand.internalRecommend}">
+                                    <option value="">请选择是否内推</option>
+                                    <option th:each="internal:${internalRecommends}" th:value="${internal.dicCode}" th:text="${internal.dicContent}" >
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="startTime" class="layui-form-label">
+                                <span class="x-red">*</span>开始日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startTime" id="startTime" lay-verify="startTime" lay-filter="startTime" th:value="${mode.equals('update')}?${#dates.format(demand.startTime,'yyyy-MM-dd')}" autocomplete="off" class="layui-input">
+                            </div>
+
+                            <label for="closeTime" class="layui-form-label">
+                                <span class="x-red">*</span>结束日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="closeTime" id="closeTime" lay-verify="closeTime" lay-filter="closeTime"  th:value="${mode.equals('update')}?${#dates.format(demand.closeTime,'yyyy-MM-dd')}" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="jobInfo" class="layui-form-label">
+                                <span class="x-red">*</span>职位职责</label>
+                            <div class="layui-input-inline" style="margin-left:1px;width: 80%;">
+                                <textarea id="jobInfo" name="jobInfo"  th:text="${mode.equals('update')}?${demand.jobInfo}" placeholder="请输入职位职责" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="postInfo" class="layui-form-label">
+                                <span class="x-red">*</span>职位需求</label>
+                            <div class="layui-input-inline" style="margin-left:1px;width: 80%;">
+                                <textarea id="postInfo" name="postInfo"  th:text="${mode.equals('update')}?${demand.postInfo}" placeholder="请输入职位需求" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="add" class="layui-form-label"></label>
+                            <button class="layui-btn" id="add" th:text="${mode.equals('add')}?'增加' : '修改'" lay-filter="add" lay-submit="">增加</button>
+                        </div>
+                   </div>
+                </form>
+            </div>
+        </div>
+        <script th:src="@{/js/common/common.js}" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" th:inline="javascript">
+            var mode=[[${mode}]];
+            // 表单操作
+            layui.use(['form', 'layer','jquery','laydate'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                    laydate = layui.laydate,
+                    layer = layui.layer;
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#startTime' //指定元素
+                });
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#closeTime' //指定元素
+                });
+                form.render();
+                //自定义验证规则
+                form.verify({
+                    cityName: function(value) {
+                        if (value.trim().length < 1) {
+                            return '城市名称至少得1个字符';
+                        }
+                    },
+                    cityCode: function (value) {
+                        if (value.trim().length < 1) {
+                            return '城市编号至少得1个字符';
+                        }
+                    }
+                });
+                //监听提交
+                form.on('submit(add)', function(data){
+                    if("add"===mode ) {
+                        $.post('/demand/add',data.field,function (r) {
+                            layer.alert(r.msg, {
+                                    icon : r.code == 'add_200' ? 6: 5
+                                },
+                                function() {
+                                  reloadTable('dataTable');
+                                });
+                        });
+                    } else if('update'==mode){
+                        $.ajax({
+                            url:"/demand/update/",
+                            type:"PUT",
+                            data: data.field,
+                            success:function(r){
+                                layer.alert(r.msg, {
+                                        icon : r.code == 'edit_200' ? 6: 5
+                                    },
+                                    function() {
+                                        reloadTable('dataTable');
+                                    });
+                            }
+                        });
+                    }
+                    return false;
+                });
+
+            });
+        </script>
+    </body>
+</html>

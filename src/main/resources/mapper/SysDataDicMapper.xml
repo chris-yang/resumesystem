@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beyondsoft.mapper.SysDataDicMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.beyondsoft.entity.SysDataDic">
+        <id column="id" property="id" />
+        <result column="dic_code" property="dicCode" />
+        <result column="dic_content" property="dicContent" />
+        <result column="sort" property="sort" />
+        <result column="pid" property="pid" />
+        <result column="enabled" property="enabled" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+        <result column="del_flag" property="delFlag" />
+    </resultMap>
+
+
+    <select resultType="com.beyondsoft.vo.SysDataDicVo" id="getDataDicVoByPid">
+        select dic.id as id,
+        dic.dic_code as dicCode,
+        dic.dic_content as dicContent,
+        dic.sort as sort,
+        dic.pid as pid,
+        dic2.dic_content as pidContent,
+        dic.enabled as enabled,
+        dic.create_user_id as createUserId,
+        dic.del_flag as delFlag
+        from sys_data_dic dic
+        left join (select id,dic_code,dic_content ,pid from sys_data_dic) dic2
+        on dic.pid=dic2.dic_code
+        where 1=1
+        <if test="dataDicCo.keyword==null">
+            and dic.pid=#{dataDicCo.pid}
+         </if>
+        and dic.del_flag=#{dataDicCo.delFlag}
+        <if test="dataDicCo.keyword!=null">
+            and dic.dic_content like CONCAT('%',#{dataDicCo.keyword},'%')
+        </if>
+        order by dic.sort
+    </select>
+
+    <select id="getDataDicSelectByParentCode" parameterType="java.util.Map" resultType="com.beyondsoft.vo.SysDataDicVo">
+        SELECT
+            sdd.dic_code,
+            sdd.dic_content
+        FROM
+            sys_data_dic sdd
+        WHERE
+            sdd.pid = #{code}
+            and sdd.del_flag=#{delFlag}
+            and sdd.enabled=#{enabled}
+    </select>
+
+
+    <select id="getDataDicList" resultType="com.beyondsoft.vo.SysDataDicListVo" parameterType="java.util.Map">
+        SELECT
+            p.id,
+            p.dic_code,
+            p.dic_content,
+            p.sort,
+            p.enabled,
+            p.del_flag,
+            c.id as childId,
+            c.dic_code as childCode,
+            c.dic_content as childDicContent,
+            c.sort as childSort,
+            c.enabled as childEnabled,
+            c.del_flag as childDelFlag
+        from sys_data_dic p
+        join sys_data_dic c on p.dic_code=c.pid
+        where p.pid=#{pid}
+              and p.dic_code != #{dicCode}
+              and p.del_flag=#{delFlag}
+              and c.del_flag=#{delFlag}
+        order by p.sort asc,c.sort asc
+    </select>
+
+</mapper>

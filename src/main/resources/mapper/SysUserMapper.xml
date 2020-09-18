@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beyondsoft.mapper.SysUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.beyondsoft.entity.SysUser">
+        <id column="id" property="id" />
+        <result column="email" property="email" />
+        <result column="password" property="password" />
+        <result column="employee_no" property="employeeNo" />
+        <result column="real_name" property="realName" />
+        <result column="city" property="city" />
+        <result column="mobile" property="mobile" />
+        <result column="enabled" property="enabled" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+        <result column="dept_id" property="deptId" />
+        <result column="del_flag" property="delFlag" />
+        <result column="salt" property="salt" />
+    </resultMap>
+    <!--用户列表-->
+    <select id="getUserList" parameterType="com.beyondsoft.co.UserCo" resultType="com.beyondsoft.vo.SysUserVo">
+        select
+            r.role_code as roleCode,
+            r.role_cn_name as roleCnName,
+            d.dept_name as deptName,
+            c.city_name as cityName,
+            u.*
+        from sys_user u
+        inner join ba_city c on c.id = u.city
+        inner join sys_user_role ur on ur.user_id = u.id
+        inner join sys_role r on r.id = ur.role_id
+        inner join sys_dept d on d.id = u.dept_id
+        where u.del_flag=#{userCo.delFlag}
+        group by u.id
+        <if test="userCo.keyword!=null">
+            and concat(u.real_name ,u.email) like concat('%',#{userCo.keyword},'%')
+        </if>
+        order by u.create_time desc
+    </select>
+    <select id="getAmSelect" resultType="com.beyondsoft.entity.SysUser">
+        select
+            su.id,
+            su.real_name
+        from sys_user su, sys_user_role sur, sys_role sr
+        where
+        su.enabled = #{enabled}
+        and su.id = sur.user_id
+        and sur.role_id = sr.id
+        and su.dept_id = #{deptId}
+        and sr.role_code = #{amRoleCode}
+    </select>
+
+<!--    获取助理下拉列表数据-->
+<!--    and su.dept_id = #{deptId}-->
+    <select id="getAssistantSelect" resultType="com.beyondsoft.entity.SysUser">
+        select
+            su.id,
+            su.real_name
+        from sys_user su, sys_user_role sur, sys_role sr
+        where
+        su.enabled = #{enabled}
+        and su.id = sur.user_id
+        and sur.role_id = sr.id
+        and sr.role_code = #{assistantRoleCode}
+    </select>
+
+
+<!--    获取助理信息-->
+    <select id="getSettlementSelect" resultType="com.beyondsoft.entity.SysUser">
+        select
+            su.id,
+            su.real_name
+        from sys_user su, sys_user_role sur, sys_role sr
+        where
+        su.enabled = #{enabled}
+        and su.id = sur.user_id
+        and sur.role_id = sr.id
+        and sr.role_code = #{settlementRoleCode}
+    </select>
+    <!--根据deptId和roleCode获得当前部门下的AM/DM角色的用户-->
+    <select id="getUserByDeptIdAndRoleCode" parameterType="java.util.Map" resultType="com.beyondsoft.vo.SysUserVo">
+        select
+            r.role_code as roleCode,
+            r.role_cn_name as roleCnName,
+            d.dept_name as deptName,
+            c.city_name as cityName,
+            u.*
+        from sys_user u
+        inner join ba_city c on c.id = u.city
+        inner join sys_user_role ur on ur.user_id = u.id
+        inner join sys_role r on r.id = ur.role_id
+        inner join sys_dept d on d.id = u.dept_id
+        where u.del_flag=#{delFlag}
+        and r.role_code=#{roleCode}
+        and d.id=#{deptId}
+    </select>
+    <select id="getUsersByRoleCode" parameterType="java.util.Map" resultType="com.beyondsoft.entity.SysUser">
+        select
+            u.*
+        from sys_user u
+        inner join sys_user_role ur on ur.user_id = u.id
+        inner join sys_role r on r.id = ur.role_id
+        where u.del_flag=#{delFlag}
+              and r.role_code=#{roleCode}
+
+    </select>
+
+    <select id="getUsersByRoleCodeExcludeSelf"  parameterType="java.util.Map" resultType="com.beyondsoft.entity.SysUser">
+        select
+            u.*
+        from sys_user u
+        inner join sys_user_role ur on ur.user_id = u.id
+        inner join sys_role r on r.id = ur.role_id
+        where u.del_flag=#{delFlag}
+              and r.role_code=#{roleCode}
+              and u.id != #{selfId}
+
+    </select>
+</mapper>

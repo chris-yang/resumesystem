@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="x-admin-sm"  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <th:bolck th:include="common/header :: header('用户管理')" />
+    </head>
+    <body>
+        <div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="/home">首页</a>
+            <a href="">系统管理</a>
+            <a>
+              <cite>角色管理</cite></a>
+          </span>
+          <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body">
+                            <form class="layui-form layui-col-space5" onsubmit="return false">
+                                <div class="layui-inline layui-show-xs-block">
+                                    <input type="text" id="keyword" name="keyword"  placeholder="请输入角色名" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-inline layui-show-xs-block">
+                                    <button class="layui-btn" id="search" data-type="reload" lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i>查询</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-header">
+                            <button class="layui-btn" onclick="xadmin.open('添加角色','/sys-role/toAddorUpdate/add/0',700,300)"><i class="layui-icon"></i>添加</button>
+                        </div>
+                        <div class="layui-card-body layui-table-body layui-table-main" >
+                            <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+    <script type="text/html" id="toolBar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <a class="layui-btn layui-btn-xs" lay-event="assign">权限</a>
+    </script>
+    <script th:src="@{/js/common/common.js}" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript"  th:inline="none">
+        layui.use(['laydate','table','form','element'], function(){
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            var table = layui.table;
+          table.render({
+              elem: '#dataTable',
+              url: '/sys-role/pagedata',
+              // toolbar: '',
+              page: true,
+              title: '用户角色数据表',
+              height: 'full-210',
+              // id: 'userData',
+              cols: [[
+                  {field: 'id', hide:true},
+                  {field: 'roleCnName', title: '角色中文名', align: 'center'},
+                  {field: 'roleEnName', title: '角色英文名', align: 'center'},
+                  {field: 'roleCode', title: '角色代码', align: 'center'},
+                  {field: 'remark', title: '角色标记', align: 'center'},
+                  {field: 'createTime', title: '创建时间', align: 'center'},
+                  {fixed: 'right', title: '操作', align: 'center', toolbar: '#toolBar', width: 210}
+              ]]
+          });
+          var $ = layui.$, active = {
+              reload: function () {
+                  var keyword = $('#keyword');
+                  //执行重载
+                  table.reload('dataTable', {
+                      page: {
+                          curr: 1 //重新从第 1 页开始
+                      }
+                      , where: {
+                          // key: {
+                          keyword: keyword.val()
+                          // }
+                      }
+                  }, 'data');
+              }
+          };
+          $('.layui-btn').on('click', function () {
+              var type = $(this).data('type');
+              active[type] ? active[type].call(this) : '';
+          });
+
+          // 监听工具栏
+          table.on('tool(dataTable)', function (obj) {
+              var data = obj.data;
+              if (obj.event === 'del') {
+                  layer.confirm('真的删除【 ' + data.roleCnName + '】么?', function (index) {
+                      role_del(data.id);
+                      layer.close(index);
+                  });
+              } else if (obj.event === 'edit') {
+                  xadmin.open('编辑数据字典', '/sys-role/toAddorUpdate/update/' + data.id, 700, 300);
+              } else if(obj.event == 'assign') {
+                  xadmin.open('权限分配', '/sys-role/toAssignRole/' + data.id, 500, 600);
+              }
+          });
+      });
+        /*角色-删除*/
+        function role_del(id){
+            $.ajax({
+                url:"/sys-role/delete/" + id,
+                type:"delete",
+                //contentType:"application/json",//设置请求参数类型为json字符串
+                // data: {id:id},
+                //dataType:"json",
+                success:function(r){
+                    //location.reload();
+                    layer.msg(r.msg,{icon: r.code == 'delete_200'? 6 : 5});
+                    // location.reload();
+                    timeout(1000);
+                }
+            });
+            timeout(2000);
+        }
+
+
+    </script>
+</html>

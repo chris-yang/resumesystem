@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beyondsoft.mapper.RecommendMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.beyondsoft.entity.Recommend">
+        <id column="id" property="id" />
+        <result column="recommend_name" property="recommendName" />
+        <result column="recommend_mobile" property="recommendMobile" />
+        <result column="resume_file" property="resumeFile" />
+        <result column="resume_file_path" property="resumeFilePath" />
+        <result column="user_id" property="userId" />
+        <result column="process_status" property="processStatus" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+    <select id="getRecommendList" parameterType="com.beyondsoft.co.RecommendCo" resultType="com.beyondsoft.vo.RecommendVo">
+        select
+            d.demand_name as demandName,
+            re.*,
+            u.real_name as hrUser,
+            re.create_time as recommendTime,
+            u2.real_name as recommendUser,
+            re.process_status as processStatus
+        from recommend re
+        left join demand_recommend dr on re.id=dr.recommend_id
+        left join demand d on d.id = dr.demand_id
+        left join sys_user u on u.id=dr.hr_user_id
+        left join sys_user u2 on u2.id=re.user_id
+    </select>
+
+</mapper>

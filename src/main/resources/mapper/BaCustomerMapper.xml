@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beyondsoft.mapper.BaCustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.beyondsoft.entity.BaCustomer">
+        <id column="id" property="id" />
+        <result column="customer_name" property="customerName" />
+        <result column="customer_code" property="customerCode" />
+        <result column="chief" property="chief" />
+        <result column="pid" property="pid" />
+        <result column="level" property="level" />
+        <result column="enabled" property="enabled" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+        <result column="del_flag" property="delFlag" />
+        <result column="sort" property="sort" />
+    </resultMap>
+    <!--客户列表-->
+    <select id="listPageData" parameterType="com.beyondsoft.co.CustomerCo" resultType="com.beyondsoft.vo.BaCustomerVo">
+        select c.*
+        ,u.real_name as chiefName
+        from ba_customer c
+        left join sys_user u on c.chief=u.id
+        where
+             c.del_flag=#{customerCo.delFlag}
+        <if test="customerCo.keyword!=null">
+            and c.customer_name like CONCAT('%',#{customerCo.keyword},'%')
+        </if>
+        <if test="customerCo.roleCode=='AM'">
+            and c.chief=#{customerCo.userId}
+        </if>
+    </select>
+    <!--根据用户id查询当前的客户信息和项目组-->
+    <select id="getCustomerAndProjectByUserId" parameterType="java.util.Map" resultType="com.beyondsoft.vo.BaCustomerAndProjectVo">
+        select
+            c.id as id,
+            c.customer_name as customerName,
+            c.customer_code as customerCode,
+            pg.id as projectId,
+            pg.pg_code as projectCode,
+            pg.pg_name as projectName
+            from ba_customer c
+            left join ba_project_group pg on c.id = pg.customer_id
+            left join ba_project_group_assistant pga on pga.pg_id = pg.id
+            left join ba_project_group_settlement pgs on pg.id=pgs.pg_id
+            where c.enabled=#{enabled}
+                and c.del_flag=#{delFlag}
+                and pg.enabled=#{enabled}
+                and pg.check_status=#{checkStatus}
+            <if test="roleCode=='AM'">
+                and pg.check_user_id=#{userId}
+            </if>
+            <if test="roleCode =='ASSISTANT'">
+                 and pga.assistant_id=#{userId}
+            </if>
+            <if test="roleCode =='SETTLEMENT'">
+                and pgs.sc_id=#{userId}
+            </if>
+
+    </select>
+
+    <!-- 根据部门ID取得客户 -->
+    <select id="getBaCustomerByDeptId" parameterType="java.util.Map" resultType="com.beyondsoft.vo.BaCustomerVo">
+        SELECT
+         bc.id,
+         bc.customer_code,
+         bc.customer_name
+        FROM
+         ba_customer bc,
+         ba_dept_customer bdc
+        WHERE
+         bc.id = bdc.customer_id
+         and bc.enabled = #{enabled}
+         and bc.del_flag=#{delFlag}
+         and bdc.dept_id = #{deptId}
+    </select>
+
+    <select id="getBaCustomerListByDeptId" parameterType="java.util.Map" resultType="com.beyondsoft.entity.BaCustomer">
+        SELECT
+         bc.*
+        FROM
+         ba_customer bc
+         left join ba_dept_customer bdc on bc.id=bdc.customer_id
+        WHERE
+          bc.enabled = #{enabled}
+          and bc.del_flag=#{delFlag}
+         and bdc.dept_id = #{deptId}
+    </select>
+    <!-- 根据客户负责人，查询客户 -->
+    <select id="getBaCustomerByChief" parameterType="java.util.Map" resultType="com.beyondsoft.entity.BaCustomer">
+        SELECT
+         bc.*
+        FROM
+         ba_customer bc
+        WHERE
+         bc.enabled = #{enabled}
+         and bc.del_flag=#{delFlag}
+         and bc.chief = #{chief}
+    </select>
+    <select id="getCustomersBySettleChief" parameterType="java.util.Map" resultType="com.beyondsoft.entity.BaCustomer">
+        select
+        *
+        from ba_customer cu
+        left join ba_project_group pg on pg.customer_id=cu.id
+        left join ba_project_group_settlement pgs on pgs.pg_id=pg.id
+        where pgs.sc_id=#{settleChiefId}
+            and cu.enabled = #{enabled}
+            and cu.del_flag=#{delFlag}
+            group  by cu.id
+    </select>
+    <!-- 批量修改考勤状态 -->
+    <update id="updateBatchs" parameterType="java.util.List">
+        <foreach collection="list" item="baCustomer" index="index" separator=";">
+            update ba_customer
+            set
+            chief = #{baCustomer.chief}
+            where id = #{baCustomer.id}
+        </foreach>
+    </update>
+</mapper>

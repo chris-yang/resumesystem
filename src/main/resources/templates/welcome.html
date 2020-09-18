@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <th:bolck th:include="common/header :: header('')" />
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <blockquote class="layui-elem-quote">欢迎：
+                                <span class="x-red">[[${session.user.realName}]]</span>！当前时间: <a id="time"></a>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">系统信息</div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table">
+                                <tbody>
+                                    <tr>
+                                        <th>项目组</th>
+                                        <td>XXXXXXX创建新的项目组</td></tr>
+                                    <tr>
+                                        <th>考勤</th>
+                                        <td>本月的考勤已经生成，请尽快填写</td></tr>
+                                    <tr>
+                                        <th>考勤</th>
+                                        <td>本月的考勤已经生成，请尽快填写</td></tr>
+                                    <tr>
+                                        <th>考勤</th>
+                                        <td>本月的考勤已经生成，请尽快填写</td></tr>
+                                    <tr>
+                                        <th>考勤</th>
+                                        <td>本月的考勤已经生成，请尽快填写</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">技术支持</div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table">
+                                <tbody>
+                                    <tr>
+                                        <th>版权所有</th>
+                                        <td>企业服务事业群
+                                            <a href="#" target="_blank"></a></td>
+                                    </tr>
+                                    <tr>
+                                        <th>技术支持</th>
+                                        <td> 010-50832646 </td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <style id="welcome_style"></style>
+                <div class="layui-col-md12">
+                    <blockquote class="layui-elem-quote layui-quote-nm">感谢layui,百度Echarts,jquery,本系统由x-admin提供技术支持。</blockquote></div>
+            </div>
+        </div>
+        </div>
+    </body>
+    <script>
+        /*<![CDATA[*/
+        function setTime(){
+            // alert(11111);
+            var dt=new Date();
+            var arr_week=new Array("星期日","星期一","星期二","星期三","星期四","星期五","星期六");
+            var strWeek=arr_week[dt.getDay()];
+            var strHour=dt.getHours();
+            var strMinutes=dt.getMinutes();
+            var strSeconds=dt.getSeconds();
+            if (strMinutes<10) strMinutes="0"+strMinutes;
+            if (strSeconds<10) strSeconds="0"+strSeconds;
+            var strYear=dt.getFullYear()+"年";
+            var strMonth=(dt.getMonth()+1)+"月";
+            var strDay=dt.getDate()+"日";
+            <!--var strTime=strHour+":"+strMinutes+":"+strSeconds;-->
+            var strTime=strHour+":"+strMinutes + ":" + strSeconds;
+            // alert(strTime);
+            $("#time").html(strYear+strMonth+strDay+" "+strTime+"  "+strWeek);
+        }
+        setInterval("setTime()",1000);
+        /*]]>*/
+    </script>
+</html>
